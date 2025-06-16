@@ -50,9 +50,8 @@ namespace ValidateDocBr
             }
 
             char firstDigit = GenerateDigit(cpfDigits);
-            char secondDigit = GenerateDigit(cpfDigits, true);
-
             cpfDigits.Add(firstDigit);
+            char secondDigit = GenerateDigit(cpfDigits, true);
             cpfDigits.Add(secondDigit);
 
             string cpf = string.Join("", cpfDigits);

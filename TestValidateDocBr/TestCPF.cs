@@ -70,5 +70,21 @@ namespace TestValidateDocBr
                 Assert.That(item, Is.True);
             }
         }
+
+        [Test]
+        public void TestGenerateCpfDoc_Without_Mask()
+        {
+            string validDoc = _cpf.Generate();
+
+            Assert.That(validDoc, Is.Not.Null);
+        }
+
+        [Test]
+        public void TestGenerateCpfDoc_With_Mask()
+        {
+            string validDoc = _cpf.Generate(true);
+
+            Assert.That(validDoc, Does.Contain('.').And.Contain('-'));
+        }
     }
 }
