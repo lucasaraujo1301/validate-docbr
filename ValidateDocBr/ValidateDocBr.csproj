@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>ValidateDocBr</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Lucas Araujo</Authors>
     <PackageProjectUrl>https://github.com/lucasaraujo1301/validate-docbr</PackageProjectUrl>
 
