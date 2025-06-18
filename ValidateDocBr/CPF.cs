@@ -2,8 +2,6 @@ namespace ValidateDocBr
 {
     public class CPF(bool repeatedDigits = false) : BaseDoc
     {
-        public List<int> Digits = Enumerable.Range(0, 10).ToList();
-
         public bool RepeatedDigits = repeatedDigits;
 
         private readonly Random Random = new();
@@ -37,7 +35,7 @@ namespace ValidateDocBr
             return GenerateDigit(digits) == digits[9] && GenerateDigit(digits, true) == digits[10];
         }
 
-        public override string Generate(bool mask = false)
+        public override string Generate(bool mask = false, bool digitOnly = true)
         {
             List<char> cpfDigits = [];
 
@@ -51,17 +49,13 @@ namespace ValidateDocBr
 
             char firstDigit = GenerateDigit(cpfDigits);
             cpfDigits.Add(firstDigit);
+
             char secondDigit = GenerateDigit(cpfDigits, true);
             cpfDigits.Add(secondDigit);
 
             string cpf = string.Join("", cpfDigits);
 
-            if (mask)
-            {
-                cpf = Mask(cpf);
-            }
-
-            return cpf;
+            return mask ? Mask(cpf) : cpf;
         }
 
         public override string Mask(string doc = "")

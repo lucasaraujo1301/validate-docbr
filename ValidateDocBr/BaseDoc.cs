@@ -2,8 +2,9 @@
 {
     public abstract class BaseDoc
     {
+        public readonly List<int> Digits = [.. Enumerable.Range(0, 10)];
         public abstract bool Validate(string doc = "");
-        public abstract string Generate(bool mask = false);
+        public abstract string Generate(bool mask = false, bool digitOnly = true);
         public abstract string Mask(string doc = "");
 
         public List<bool> ValidateList(List<string> docList)
