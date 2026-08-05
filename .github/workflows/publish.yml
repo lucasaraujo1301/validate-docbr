@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   publish:
@@ -55,9 +56,15 @@ jobs:
           -p:PackageVersion=${{ env.PACKAGE_VERSION }}
           --output artifacts
 
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: lucasaraujo1301
+
       - name: Publish
         run: >-
           dotnet nuget push "artifacts/*.nupkg"
-          --api-key "${{ secrets.NUGET_API_KEY }}"
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
