@@ -12,6 +12,26 @@ namespace TestValidateDocBr
             Assert.That(_cnpj.Validate("37.124.385/0001-09"), Is.True);
         }
 
+        [TestCase("12.ABC.345/01DE-35")]
+        [TestCase("12.abc.345/01de-35")]
+        public void TestValidateCNPJ_Alphanumeric_Success(string cnpj)
+        {
+            Assert.That(_cnpj.Validate(cnpj), Is.True);
+        }
+
+        [Test]
+        public void TestValidateCNPJ_Alphanumeric_Invalid_Check_Digits()
+        {
+            Assert.That(_cnpj.Validate("12.ABC.345/01DE-36"), Is.False);
+        }
+
+        [TestCase("12.ABC.345/01DE-3A")]
+        [TestCase("12.ABC.345/01DE-A5")]
+        public void TestValidateCNPJ_Alphanumeric_Check_Digits_Must_Be_Numeric(string cnpj)
+        {
+            Assert.That(_cnpj.Validate(cnpj), Is.False);
+        }
+
         [Test]
         public void TestValidateCNPJ_Unsuccess_Invalid_Doc()
         {
