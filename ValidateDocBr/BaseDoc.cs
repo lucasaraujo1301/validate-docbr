@@ -2,14 +2,21 @@
 {
     public abstract class BaseDoc
     {
-        public readonly List<int> Digits = [.. Enumerable.Range(0, 10)];
+        public readonly List<int> Digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         public abstract bool Validate(string doc = "");
         public abstract string Generate(bool mask = false, bool digitOnly = true);
         public abstract string Mask(string doc = "");
 
         public List<bool> ValidateList(List<string> docList)
         {
-            return [.. docList.Select(doc => Validate(doc))];
+            List<bool> results = new(docList.Count);
+
+            foreach (string doc in docList)
+            {
+                results.Add(Validate(doc));
+            }
+
+            return results;
         }
 
         protected string OnlyDigits(string doc = "")
@@ -38,9 +45,6 @@
 
             valid_characters ??= ['.', '-', '/', ' '];
 
-            HashSet<char> setValidCharacters = [.. valid_characters];
-            HashSet<char> setNonPermittedCharacters = [];
-
             foreach (char c in input)
             {
                 if (char.IsDigit(c))
@@ -53,15 +57,15 @@
                     continue;
                 }
 
-                if (setValidCharacters.Contains(c))
+                if (valid_characters.Contains(c))
                 {
                     continue;
                 }
 
-                setNonPermittedCharacters.Add(c);
+                return false;
             }
 
-            return setNonPermittedCharacters.Count == 0;
+            return true;
         } 
     } 
     

@@ -8,26 +8,47 @@ namespace ValidateDocBr
 
         public override bool Validate(string doc = "")
         {
-            if (!ValidateInput(doc, ['.', '-']))
+            if (string.IsNullOrEmpty(doc))
             {
                 return false;
             }
 
-            doc = OnlyDigits(doc);
+            Span<char> digits = stackalloc char[11];
+            int digitCount = 0;
 
-            if (doc.Length < 11)
+            foreach (char character in doc)
             {
-                doc = CompleteWithZero(doc);
+                if (char.IsDigit(character))
+                {
+                    if (digitCount == digits.Length)
+                    {
+                        return false;
+                    }
+
+                    digits[digitCount++] = character;
+                    continue;
+                }
+
+                if (character is not ('.' or '-'))
+                {
+                    return false;
+                }
             }
 
-            List<char> digits = doc.ToList();
+            if (digitCount < digits.Length)
+            {
+                digits[..digitCount].CopyTo(digits[(digits.Length - digitCount)..]);
+                digits[..(digits.Length - digitCount)].Fill('0');
+            }
 
-            if (!RepeatedDigits && CheckRepatedDigits(digits))
+            bool repeatedDigits = CheckRepeatedDigits(digits);
+
+            if (!RepeatedDigits && repeatedDigits)
             {
                 return false;
             }
 
-            if (RepeatedDigits && CheckRepatedDigits(digits))
+            if (RepeatedDigits && repeatedDigits)
             {
                 return true;
             }
@@ -37,25 +58,20 @@ namespace ValidateDocBr
 
         public override string Generate(bool mask = false, bool digitOnly = true)
         {
-            List<char> cpfDigits = [];
+            Span<char> cpfDigits = stackalloc char[11];
 
             for (int i = 0; i < 9; i++)
             {
                 int randomIndex = Random.Next(Digits.Count);
                 int randomDigit = Digits[randomIndex];
 
-                cpfDigits.Add((char)('0' + randomDigit));
+                cpfDigits[i] = (char)('0' + randomDigit);
             }
 
-            char firstDigit = GenerateDigit(cpfDigits);
-            cpfDigits.Add(firstDigit);
+            cpfDigits[9] = GenerateDigit(cpfDigits);
+            cpfDigits[10] = GenerateDigit(cpfDigits, true);
 
-            char secondDigit = GenerateDigit(cpfDigits, true);
-            cpfDigits.Add(secondDigit);
-
-            string cpf = string.Join("", cpfDigits);
-
-            return mask ? Mask(cpf) : cpf;
+            return mask ? Mask(cpfDigits) : new string(cpfDigits);
         }
 
         public override string Mask(string doc = "")
@@ -64,10 +80,10 @@ namespace ValidateDocBr
             {
                 throw new ArgumentException("The length must be 11 for this document");
             }
-            return $"{doc[..3]}.{doc[3..6]}.{doc[6..9]}-{doc[^2..]}";
+            return $"{doc.AsSpan(0, 3)}.{doc.AsSpan(3, 3)}.{doc.AsSpan(6, 3)}-{doc.AsSpan(9, 2)}";
         }
 
-        private char GenerateDigit(List<char> doc, bool isSecondDigit = false)
+        private static char GenerateDigit(ReadOnlySpan<char> doc, bool isSecondDigit = false)
         {
             int length = isSecondDigit ? 11 : 10;
 
@@ -77,9 +93,7 @@ namespace ValidateDocBr
             {
                 int charIndex = length - i;
 
-                string charAsString = doc[charIndex].ToString();
-
-                int digit = int.Parse(charAsString);
+                int digit = doc[charIndex] - '0';
 
                 sum += digit * i;
             }
@@ -94,17 +108,24 @@ namespace ValidateDocBr
             return (char)('0' + sum);
         }
 
-        private bool CheckRepatedDigits(List<char> doc)
+        private static bool CheckRepeatedDigits(ReadOnlySpan<char> doc)
         {
-            HashSet<char> digits = [.. doc];
+            char firstDigit = doc[0];
 
-            return digits.Count == 1;
+            foreach (char digit in doc[1..])
+            {
+                if (digit != firstDigit)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        private string CompleteWithZero(string doc)
+        private static string Mask(ReadOnlySpan<char> doc)
         {
-            int totalLength = 11;
-            return doc.PadLeft(totalLength, '0');
+            return $"{doc[..3]}.{doc[3..6]}.{doc[6..9]}-{doc[9..]}";
         }
     }
 }

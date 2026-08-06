@@ -12,6 +12,13 @@ namespace TestValidateDocBr
             Assert.That(_cnpj.Validate("37.124.385/0001-09"), Is.True);
         }
 
+        [TestCase("37124385000109")]
+        [TestCase("37.124.385/0001-09")]
+        public void TestValidateCNPJ_Formatted_And_Unformatted(string cnpj)
+        {
+            Assert.That(_cnpj.Validate(cnpj), Is.True);
+        }
+
         [TestCase("12.ABC.345/01DE-35")]
         [TestCase("12.abc.345/01de-35")]
         public void TestValidateCNPJ_Alphanumeric_Success(string cnpj)
@@ -83,6 +90,15 @@ namespace TestValidateDocBr
             string cnpj = _cnpj.Generate(digitOnly: false);
 
             Assert.That(cnpj, Is.Not.Null);
+            Assert.That(_cnpj.Validate(cnpj), Is.True);
+        }
+
+        [Test]
+        public void TestGenerateCNPJ_With_Mask_Success()
+        {
+            string cnpj = _cnpj.Generate(mask: true);
+
+            Assert.That(cnpj, Does.Contain('.').And.Contain('/').And.Contain('-'));
             Assert.That(_cnpj.Validate(cnpj), Is.True);
         }
     }

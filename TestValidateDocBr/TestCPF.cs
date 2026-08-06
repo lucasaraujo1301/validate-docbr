@@ -14,6 +14,20 @@ namespace TestValidateDocBr
             Assert.That(_cpf.Validate(validDoc), Is.True);
         }
 
+        [TestCase("94729967011")]
+        [TestCase("947.299.670-11")]
+        public void TestValidateCpfDoc_Formatted_And_Unformatted(string cpf)
+        {
+            Assert.That(_cpf.Validate(cpf), Is.True);
+        }
+
+        [TestCase("947299670111")]
+        [TestCase("947 299 670 11")]
+        public void TestValidateCpfDoc_Invalid_Input(string cpf)
+        {
+            Assert.That(_cpf.Validate(cpf), Is.False);
+        }
+
         [Test]
         public void TestValidateCpfDoc_InvalidDoc()
         {
