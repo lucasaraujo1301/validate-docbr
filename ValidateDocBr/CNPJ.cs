@@ -73,13 +73,13 @@ namespace ValidateDocBr
             return mask ? Mask(cnpjChars) : new string(cnpjChars);
         }
 
-        public override string Mask(string doc = "")
+        public override string Mask(ReadOnlySpan<char> doc)
         {
             if (doc.Length != 14)
             {
                 throw new ArgumentException("The length must be 14 for this document");
             }
-            return $"{doc.AsSpan(0, 2)}.{doc.AsSpan(2, 3)}.{doc.AsSpan(5, 3)}/{doc.AsSpan(8, 4)}-{doc.AsSpan(12, 2)}";
+            return $"{doc[..2]}.{doc[2..5]}.{doc[5..8]}/{doc[8..12]}-{doc[12..]}";
         }
 
         private char GenerateDigit(ReadOnlySpan<char> doc, bool isSecondDigit = false)
@@ -100,11 +100,6 @@ namespace ValidateDocBr
             sum = sum < 2 ? 0 : 11 - sum;
 
             return (char)('0' + sum);
-        }
-
-        private static string Mask(ReadOnlySpan<char> doc)
-        {
-            return $"{doc[..2]}.{doc[2..5]}.{doc[5..8]}/{doc[8..12]}-{doc[12..]}";
         }
     }
 }

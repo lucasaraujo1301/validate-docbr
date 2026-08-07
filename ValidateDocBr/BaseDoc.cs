@@ -5,7 +5,7 @@
         public readonly List<int> Digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         public abstract bool Validate(string doc = "");
         public abstract string Generate(bool mask = false, bool digitOnly = true);
-        public abstract string Mask(string doc = "");
+        public abstract string Mask(ReadOnlySpan<char> doc);
 
         public List<bool> ValidateList(List<string> docList)
         {
